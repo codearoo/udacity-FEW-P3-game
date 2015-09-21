@@ -25,6 +25,8 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         lastTime;
 
+    var animate = true; // just for debugging to stop things moving.
+
     canvas.width = 505;
     canvas.height = 606;
     doc.body.appendChild(canvas);
@@ -45,7 +47,7 @@ var Engine = (function(global) {
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
-        update(dt);
+        if (animate) update(dt);
         render();
 
         /* Set our lastTime variable which is used to determine the time delta
@@ -93,6 +95,8 @@ var Engine = (function(global) {
     function updateEntities(dt) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
+            if (enemy.isOccupying(player.GetLeft(), player.GetCenterY())) player.reset();
+            else if (enemy.isOccupying(player.GetRight(), player.GetCenterY())) player.reset();
         });
         player.update();
     }
@@ -163,6 +167,40 @@ var Engine = (function(global) {
         // noop
     }
 
+    // Adding this listener for debugging to have an easy way to find
+    // the X and Y on the screen.
+    document.addEventListener('click', function (e) {
+        var x = e.clientX - canvas.offsetLeft;
+        var y = e.clientY - canvas.offsetTop;
+
+        console.log("x = " + x + " y = " + y);
+
+        allEnemies.forEach(function(enemy) {
+            if (enemy.isOccupying(x, y)) {
+                console.log("I'm " + enemy.GetName()
+                    + "bug top: " + enemy.GetTop()
+                    + " bottom: " + enemy.GetBottom()
+                    + " left: " + enemy.GetLeft()
+                    + " right: " + enemy.GetRight()
+                    + " x: " + enemy.x + " y:  " + enemy.y);
+            }
+        })
+        if (player.isOccupying(x, y)) {
+            console.log("I'm " + player.GetName()
+                    + " at x = " + player.x + " y = " + player.y
+                    + " width = " + player.width + " height = " + player.height);
+            // clicking on the player will toddle animation.
+            animate = !animate;
+        }
+
+        console.log("player top: " + player.GetTop()
+            + " bottom: " + player.GetBottom()
+            + " left: " + player.GetLeft()
+            + " right: " + player.GetRight()
+            + " x: " + player.x + " y:  " + player.y);
+
+    });
+
     /* Go ahead and load all of the images we know we're going to need to
      * draw our game level. Then set init as the callback method, so that when
      * all of these images are properly loaded our game will start.
@@ -172,6 +210,7 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
+        'images/enemy-bug-left.png',
         'images/char-boy.png'
     ]);
     Resources.onReady(init);
@@ -181,4 +220,8 @@ var Engine = (function(global) {
      * from within their app.js files.
      */
     global.ctx = ctx;
+
+    // Not sure how we're supposed to get access to the canvas width, so
+    // I put this globally there too.
+    global.canvas = canvas;
 })(this);
