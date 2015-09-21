@@ -50,6 +50,12 @@ var Engine = (function(global) {
         if (animate) update(dt);
         render();
 
+        // if player hits the top, then post message and stop the game.
+        if (player.GetTop() < 100) {
+            alert("You won! Plress F5 to play again.");
+            Engine.init();
+        }
+
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
          */
@@ -98,6 +104,7 @@ var Engine = (function(global) {
             if (enemy.isOccupying(player.GetLeft(), player.GetCenterY())) player.reset();
             else if (enemy.isOccupying(player.GetRight(), player.GetCenterY())) player.reset();
         });
+        
         player.update();
     }
 

@@ -38,8 +38,8 @@ extend(Player, GameEntity);
     this.render = function () {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
         // Used for debugging to know where the real borders.
-        ctx.fillRect(this.GetLeft(), this.GetTop(), 10, 10);
-        ctx.fillRect(this.GetRight(), this.GetBottom(), 10, 10);
+        // ctx.fillRect(this.GetLeft(), this.GetTop(), 10, 10);
+        // ctx.fillRect(this.GetRight(), this.GetBottom(), 10, 10);
     };
 
     this.reset = function () {
